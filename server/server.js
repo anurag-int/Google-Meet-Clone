@@ -1,16 +1,24 @@
-const cors = require("cors");
-app.use(
-	cors({
-		origin:"http://localhost:3000",
-		credentials:true,
-	})
-)
-
+const express = require('express');
+const app = express();
+const http = require('http').createServer(app);
+const cors = require('cors');
 const { Server } = require('socket.io');
 
-const io = new Server(8000);
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
-io.on('connection', socket => {
-    console.log(`Socket Connected`, socket.id);
+const io = new Server(http);
+
+io.on('connection', (socket) => {
+  console.log(`Socket Connected`, socket.id);
 });
 
+const PORT = 8000;
+
+http.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
