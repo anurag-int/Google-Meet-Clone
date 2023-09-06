@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom"
 import { useSocket } from '../context/SocketProvider';
 import "./lobby.css"; // Import your CSS file for styling
 
@@ -8,6 +9,7 @@ function LobbyScreen() {
   const [selectedRoom, setSelectedRoom] = useState("");
 
   const socket = useSocket();
+  const navigate = useNavigate();
 
   // Handle email input change
   const handleEmailChange = (e) => {
@@ -30,8 +32,8 @@ function LobbyScreen() {
 
   const handleJoinRoom = useCallback((data) => {
     const { email, selectedRoom } = data;
-    console.log(email, selectedRoom);
-  }, []);
+    navigate(`/room/${selectedRoom}`)
+  }, [navigate]);
 
   useEffect(() => {
     socket.on('room:join', handleJoinRoom)
