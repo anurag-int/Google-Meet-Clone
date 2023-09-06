@@ -1,5 +1,10 @@
-// A WebRTC signaling server is a server that manages the connections between peers, so we can do that by using socket.io  
-
+const cors = require("cors");
+app.use(
+	cors({
+		origin:"http://localhost:3000",
+		credentials:true,
+	})
+)
 
 const { Server } = require('socket.io');
 
