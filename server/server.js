@@ -1,8 +1,4 @@
-// A WebRTC signaling server is a server that manages the connections between peers, so we can do that by using socket.io  
-
-
 const { Server } = require('socket.io');
-
 
 const io = new Server(8000, {
     cors: true
@@ -16,6 +12,8 @@ io.on('connection', (socket) => {
     const { email, room } = data;
     emailToSocketIdMap.set(email, socket.id);
     socketIdToEmailMap.set(socket.id, email);
+    io.to(room).emit('user:joined', {email, id: socket.id});
+    socket.join(room);
     io.to(socket.id).emit("room:join", data);
   });
 });
