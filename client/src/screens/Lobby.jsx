@@ -55,6 +55,7 @@ function LobbyScreen() {
         <button type="submit">Join</button>
       </form>
     </div>
+    
   );
 }
 
