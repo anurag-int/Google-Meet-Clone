@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { useSocket } from '../context/SocketProvider';
 import "./lobby.css"; // Import your CSS file for styling
 
 function LobbyScreen() {
   // State for email and selected room
   const [email, setEmail] = useState("");
   const [selectedRoom, setSelectedRoom] = useState("");
+
+  const socket = useSocket();
 
   // Handle email input change
   const handleEmailChange = (e) => {
@@ -17,12 +20,25 @@ function LobbyScreen() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // You can add your logic for handling the form submission here
-    console.log("Email:", email);
-    console.log("Selected Room:", selectedRoom);
-  };
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      socket.emit("room:join", { email, selectedRoom });
+    },
+    [email, selectedRoom, socket]
+  );
+
+  const handleJoinRoom = useCallback((data) => {
+    const { email, selectedRoom } = data;
+    console.log(email, selectedRoom);
+  }, []);
+
+  useEffect(() => {
+    socket.on('room:join', handleJoinRoom)
+        return () => {
+            socket.off('room:join', handleJoinRoom);
+        }
+    });
 
   return (
     <div className="form-container">
@@ -55,7 +71,6 @@ function LobbyScreen() {
         <button type="submit">Join</button>
       </form>
     </div>
-    
   );
 }
 
