@@ -1,79 +1,61 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom"
-import { useSocket } from '../context/SocketProvider';
-import "./lobby.css"; // Import your CSS file for styling
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "../context/SocketProvider";
 
-function LobbyScreen() {
-  // State for email and selected room
+const LobbyScreen = () => {
   const [email, setEmail] = useState("");
-  const [selectedRoom, setSelectedRoom] = useState("");
+  const [room, setRoom] = useState("");
 
   const socket = useSocket();
   const navigate = useNavigate();
 
-  // Handle email input change
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  // Handle room selection change
-  const handleRoomChange = (e) => {
-    setSelectedRoom(e.target.value);
-  };
-
-  // Handle form submission
-  const handleSubmit = useCallback(
+  const handleSubmitForm = useCallback(
     (e) => {
       e.preventDefault();
-      socket.emit("room:join", { email, selectedRoom });
+      socket.emit("room:join", { email, room });
     },
-    [email, selectedRoom, socket]
+    [email, room, socket]
   );
 
-  const handleJoinRoom = useCallback((data) => {
-    const { email, selectedRoom } = data;
-    navigate(`/room/${selectedRoom}`)
-  }, [navigate]);
+  const handleJoinRoom = useCallback(
+    (data) => {
+      const { email, room } = data;
+      navigate(`/room/${room}`);
+    },
+    [navigate]
+  );
 
   useEffect(() => {
-    socket.on('room:join', handleJoinRoom)
-        return () => {
-            socket.off('room:join', handleJoinRoom);
-        }
-    });
+    socket.on("room:join", handleJoinRoom);
+    return () => {
+      socket.off("room:join", handleJoinRoom);
+    };
+  }, [socket, handleJoinRoom]);
 
   return (
-    <div className="form-container">
-      <h2>Video Call</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={handleEmailChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="room">Select a Room:</label>
-          <select
-            id="room"
-            value={selectedRoom}
-            onChange={handleRoomChange}
-            required
-          >
-            <option value="">Select</option>
-            <option value="room1">Room 1</option>
-            <option value="room2">Room 2</option>
-            <option value="room3">Room 3</option>
-          </select>
-        </div>
-        <button type="submit">Join</button>
+    <div>
+      <h1>Lobby</h1>
+      <form onSubmit={handleSubmitForm}>
+        <label htmlFor="email">Email ID</label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <br />
+        <label htmlFor="room">Room Number</label>
+        <input
+          type="text"
+          id="room"
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
+        />
+        <br />
+        <button>Join</button>
       </form>
     </div>
   );
-}
+};
 
 export default LobbyScreen;
